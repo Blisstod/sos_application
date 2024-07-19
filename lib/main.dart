@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 void main() {
   runApp(MyApp());
@@ -21,6 +22,15 @@ class MyApp extends StatelessWidget {
 }
 
 class SOSPage extends StatelessWidget {
+  void _launchPhone() async {
+    const url = 'tel:102'; // Replace 911 with the emergency number you prefer
+    if (await canLaunch(url)) {
+      await launch(url);
+    } else {
+      throw 'Could not launch $url';
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -47,6 +57,11 @@ class SOSPage extends StatelessWidget {
                     );
                   },
                 ),
+                // IconButton(
+                //   icon: Icon(Icons.phone,
+                //       size: 50.0, color: Colors.pink.shade300),
+                //   onPressed: _launchPhone,
+                // ),
                 IconButton(
                   icon:
                       Icon(Icons.info, size: 50.0, color: Colors.pink.shade300),
@@ -69,24 +84,34 @@ class SOSPage extends StatelessWidget {
               ),
             ),
             SizedBox(height: 20.0),
-            Container(
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                gradient: LinearGradient(
-                  colors: [Colors.pink.shade300, Colors.pink.shade100],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
+            InkWell(
+              onTap: _launchPhone,
+              child: Container(
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  gradient: LinearGradient(
+                    colors: [Colors.pink.shade300, Colors.pink.shade100],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.pink.shade400,
+                      offset: Offset(0, 4),
+                      blurRadius: 8.0,
+                    ),
+                  ],
                 ),
-              ),
-              width: 200.0,
-              height: 200.0,
-              child: Center(
-                child: Text(
-                  'SOS',
-                  style: TextStyle(
-                    fontSize: 50.0,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.pink.shade700,
+                width: 200.0,
+                height: 200.0,
+                child: Center(
+                  child: Text(
+                    'SOS',
+                    style: TextStyle(
+                      fontSize: 50.0,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.pink.shade700,
+                    ),
                   ),
                 ),
               ),
