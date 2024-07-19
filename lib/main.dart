@@ -104,7 +104,12 @@ class SOSPage extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 ElevatedButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => ChatPage()),
+                    );
+                  },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.pink.shade300,
                     shape: RoundedRectangleBorder(
@@ -163,7 +168,8 @@ class LocationPage extends StatelessWidget {
           ),
           child: FlutterMap(
             options: MapOptions(
-              center: LatLng(40.7128, -74.0060), // New York City coordinates
+              center:
+                  LatLng(51.1194, 71.4091), // Astana, Kazakhstan coordinates
               zoom: 13.0,
             ),
             children: [
@@ -175,18 +181,36 @@ class LocationPage extends StatelessWidget {
               MarkerLayer(
                 markers: [
                   Marker(
-                    width: 80.0,
-                    height: 80.0,
-                    point: LatLng(40.7128, -74.0060),
+                    width: 70.0,
+                    height: 70.0,
+                    point: LatLng(51.1030, 71.4060),
                     builder: (ctx) => Container(
                       child: Icon(Icons.person_pin_circle,
-                          color: Colors.pink.shade300, size: 50.0),
+                          color: Colors.pink.shade300, size: 40.0),
                     ),
                   ),
                   Marker(
-                    width: 80.0,
-                    height: 80.0,
-                    point: LatLng(40.7120, -74.0050),
+                    width: 70.0,
+                    height: 70.0,
+                    point: LatLng(51.110, 71.4265),
+                    builder: (ctx) => Container(
+                      child: Icon(Icons.person_pin_circle,
+                          color: Colors.pink.shade300, size: 40.0),
+                    ),
+                  ),
+                  Marker(
+                    width: 70.0,
+                    height: 70.0,
+                    point: LatLng(51.0945, 71.4272),
+                    builder: (ctx) => Container(
+                      child: Icon(Icons.person_pin_circle,
+                          color: Colors.pink.shade300, size: 40.0),
+                    ),
+                  ),
+                  Marker(
+                    width: 90.0,
+                    height: 90.0,
+                    point: LatLng(51.0980, 71.4080),
                     builder: (ctx) => Container(
                       child: Icon(Icons.location_pin,
                           color: Colors.pink.shade300, size: 50.0),
@@ -294,6 +318,110 @@ class InfoPage extends StatelessWidget {
           Text(
             info,
             style: TextStyle(fontSize: 16),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class ChatPage extends StatefulWidget {
+  @override
+  _ChatPageState createState() => _ChatPageState();
+}
+
+class _ChatPageState extends State<ChatPage> {
+  final TextEditingController _controller = TextEditingController();
+  final List<Map<String, dynamic>> _messages = [];
+  final List<String> volunteers = ['John', 'Kuralay', 'Nazerke'];
+  String _selectedVolunteer = 'John';
+
+  void _sendMessage() {
+    if (_controller.text.isEmpty) return;
+    setState(() {
+      _messages.add({'message': _controller.text, 'isVolunteer': false});
+      _controller.clear();
+    });
+  }
+
+  Widget _buildChatBubble(String message, bool isVolunteer) {
+    return Align(
+      alignment: isVolunteer ? Alignment.centerLeft : Alignment.centerRight,
+      child: Container(
+        margin: EdgeInsets.symmetric(vertical: 5, horizontal: 10),
+        padding: EdgeInsets.all(15),
+        decoration: BoxDecoration(
+          color: isVolunteer ? Colors.pink.shade200 : Colors.pink.shade100,
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: Text(
+          message,
+          style: TextStyle(color: Colors.white, fontSize: 16),
+        ),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.pink.shade50,
+      appBar: AppBar(
+        backgroundColor: Colors.pink.shade300,
+        title: Text('Chat with Volunteer'),
+        actions: [
+          DropdownButton<String>(
+            dropdownColor: Colors.pink.shade100,
+            value: _selectedVolunteer,
+            items: volunteers.map((String value) {
+              return DropdownMenuItem<String>(
+                value: value,
+                child: Text(value, style: TextStyle(color: Colors.white)),
+              );
+            }).toList(),
+            onChanged: (String? newValue) {
+              setState(() {
+                _selectedVolunteer = newValue!;
+              });
+            },
+          ),
+        ],
+      ),
+      body: Column(
+        children: [
+          Expanded(
+            child: ListView.builder(
+              itemCount: _messages.length,
+              itemBuilder: (context, index) {
+                return _buildChatBubble(_messages[index]['message'],
+                    _messages[index]['isVolunteer']);
+              },
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Row(
+              children: [
+                Expanded(
+                  child: TextField(
+                    controller: _controller,
+                    decoration: InputDecoration(
+                      hintText: 'Type your message...',
+                      fillColor: Colors.white,
+                      filled: true,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(20),
+                        borderSide: BorderSide.none,
+                      ),
+                    ),
+                  ),
+                ),
+                IconButton(
+                  icon: Icon(Icons.send, color: Colors.pink.shade300),
+                  onPressed: _sendMessage,
+                ),
+              ],
+            ),
           ),
         ],
       ),
